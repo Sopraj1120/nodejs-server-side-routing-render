@@ -2,7 +2,7 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 
-// Function to serve the layout with specific content
+// Function to serve the layout with specific content and script
 const servePage = (res, page) => {
   fs.readFile(path.join(__dirname, 'views', 'layout.html'), 'utf-8', (err, layoutData) => {
     if (err) {
@@ -16,7 +16,13 @@ const servePage = (res, page) => {
         return res.end('Page not found');
       }
 
-      const finalPage = layoutData.replace('{content}', pageData);
+      // Replace content placeholder
+      let finalPage = layoutData.replace('{content}', pageData);
+
+      // Insert the page-specific script
+      const scriptTag = `<script src="/static/${page}.js"></script>`;
+      finalPage = finalPage.replace('{content-script}', scriptTag);
+
       res.writeHead(200, { 'Content-Type': 'text/html' });
       res.end(finalPage);
     });
